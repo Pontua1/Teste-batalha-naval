@@ -19,7 +19,7 @@ class MenuScene(Scene):
 
     def handle_event(self, event):
         if self.btn_play.handle_event(event):
-            self.manager.go_to(State.PLACEMENT)
+            self.manager.go_to(State.PLACEMENT, {"player_id": 1})
         if self.btn_quit.handle_event(event):
             pygame.event.post(pygame.event.Event(pygame.QUIT))
 

@@ -1,4 +1,4 @@
-# scenes/placement.py — Posicionamento dos navios do jogador
+# scenes/placement.py — Posicionamento de navios para dois jogadores
 
 import pygame
 import random
@@ -15,22 +15,25 @@ from settings import (
 
 
 class PlacementScene(Scene):
-    def __init__(self, manager):
+    def __init__(self, manager, data):
         super().__init__(manager)
-        self.board       = Board()
-        self.renderer    = BoardRenderer(None, GRID_OFFSET_X_PLAYER, GRID_OFFSET_Y)
-        self.ship_queue  = list(SHIPS.items())   # [(nome, tamanho), ...]
-        self.placed      = []                    # Ship já posicionados
-        self.current_idx = 0
-        self.horizontal  = True
-        self.hover_cell  = None
-        self.message     = ""
+        # Qual jogador está posicionando? (1 ou 2)
+        self.player_id = data.get("player_id", 1)
 
-        # botões
-        self.btn_rotate   = Button(620, 200, 160, 44, "Girar [R]")
-        self.btn_random   = Button(620, 260, 160, 44, "Aleatório")
-        self.btn_restart  = Button(620, 320, 160, 44, "Reiniciar")
-        self.btn_start    = Button(620, 420, 160, 54, "Iniciar!", color=(30,100,50))
+        self.board = Board()
+        self.renderer = BoardRenderer(None, GRID_OFFSET_X_PLAYER, GRID_OFFSET_Y)
+        self.ship_queue = list(SHIPS.items())   # [(nome, tamanho), ...]
+        self.placed = []                        # Ship já posicionados
+        self.current_idx = 0
+        self.horizontal = True
+        self.hover_cell = None
+        self.message = ""
+
+        # Botões
+        self.btn_rotate = Button(620, 200, 160, 44, "Girar [R]")
+        self.btn_random = Button(620, 260, 160, 44, "Aleatório")
+        self.btn_restart = Button(620, 320, 160, 44, "Reiniciar")
+        self.btn_continue = Button(620, 420, 160, 54, "Continuar", color=(30,100,50))
 
     # ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -54,14 +57,13 @@ class PlacementScene(Scene):
 
     def _random_placement(self):
         """Posiciona todos os navios restantes aleatoriamente."""
-        import random
         for i in range(self.current_idx, len(self.ship_queue)):
             name, size = self.ship_queue[i]
             placed = False
             for _ in range(200):
                 row = random.randint(0, 9)
                 col = random.randint(0, 9)
-                h   = random.choice([True, False])
+                h = random.choice([True, False])
                 ship = Ship(name, size, row, col, h)
                 if self.board.place_ship(ship):
                     ship.set_pos(row, col, GRID_OFFSET_X_PLAYER, GRID_OFFSET_Y)
@@ -72,26 +74,35 @@ class PlacementScene(Scene):
                 self.current_idx += 1
 
     def _restart(self):
-        self.__init__(self.manager)
+        # Reinicia apenas o posicionamento do jogador atual
+        self.board = Board()
+        self.placed = []
+        self.current_idx = 0
+        self.message = ""
 
     def _all_placed(self):
         return self.current_idx >= len(self.ship_queue)
 
-    # ── AI placement ──────────────────────────────────────────────────────────
+    # ── Finalização e transição ───────────────────────────────────────────────
 
-    def _build_ai_board(self):
-        ai_board = Board()
-        import random
-        for name, size in SHIPS.items():
-            for _ in range(200):
-                row = random.randint(0, 9)
-                col = random.randint(0, 9)
-                h   = random.choice([True, False])
-                ship = Ship(name, size, row, col, h)
-                if ai_board.place_ship(ship):
-                    ship.set_pos(row, col, 0, 0)
-                    break
-        return ai_board
+    def _finish_placement(self):
+        """Salva o tabuleiro e navios do jogador atual no manager e avança."""
+        # Armazena no gerenciador
+        if self.player_id == 1:
+            self.manager.game_data["board1"] = self.board
+            self.manager.game_data["ships1"] = self.placed
+            # Vai para o posicionamento do jogador 2
+            self.manager.go_to(State.PLACEMENT, {"player_id": 2})
+        else:  # player_id == 2
+            self.manager.game_data["board2"] = self.board
+            self.manager.game_data["ships2"] = self.placed
+            # Ambos posicionaram → inicia batalha
+            self.manager.go_to(State.BATTLE, {
+                "board1": self.manager.game_data["board1"],
+                "ships1": self.manager.game_data["ships1"],
+                "board2": self.manager.game_data["board2"],
+                "ships2": self.manager.game_data["ships2"],
+            })
 
     # ── Eventos ───────────────────────────────────────────────────────────────
 
@@ -105,14 +116,8 @@ class PlacementScene(Scene):
             self._random_placement()
         if self.btn_restart.handle_event(event):
             self._restart()
-        if self.btn_start.handle_event(event) and self._all_placed():
-            ai_board = self._build_ai_board()
-            self.manager.go_to(State.BATTLE, {
-                "player_board": self.board,
-                "player_ships": self.placed,
-                "ai_board":     ai_board,
-                "ai_ships":     ai_board.ships,
-            })
+        if self.btn_continue.handle_event(event) and self._all_placed():
+            self._finish_placement()
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             cell = self.renderer.pixel_to_cell(*event.pos)
@@ -125,13 +130,15 @@ class PlacementScene(Scene):
     # ── Desenho ───────────────────────────────────────────────────────────────
 
     def draw(self, surface):
-        self.renderer.surface    = surface
+        self.renderer.surface = surface
         self.renderer.hover_cell = self.hover_cell
         surface.fill(C_BG)
         self.renderer.draw(self.board)
-        self.renderer.draw_label("SEU TABULEIRO")
+        # Label indica qual jogador está posicionando
+        label = f"JOGADOR {self.player_id} - POSICIONE SEUS NAVIOS"
+        self.renderer.draw_label(label)
 
-        # preview do navio atual
+        # Preview do navio atual
         name, size = self._current_ship_info()
         if name and self.hover_cell:
             row, col = self.hover_cell
@@ -145,7 +152,7 @@ class PlacementScene(Scene):
                     s.fill(color)
                     surface.blit(s, rect.topleft)
 
-        # painel lateral
+        # Painel lateral
         info_lines = [
             f"Posicionando: {name or 'Concluído'}",
             f"Tamanho: {size or '-'}",
@@ -161,4 +168,4 @@ class PlacementScene(Scene):
         self.btn_random.draw(surface)
         self.btn_restart.draw(surface)
         if self._all_placed():
-            self.btn_start.draw(surface)
+            self.btn_continue.draw(surface)

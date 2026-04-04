@@ -10,8 +10,14 @@ class SceneManager:
 
     def __init__(self, surface):
         self.surface = surface
-        self.scene   = None
-        self.go_to(State.MENU)
+        self.game_data = {          # ← dados compartilhados entre cenas
+            "board1": None,
+            "ships1": None,
+            "board2": None,
+            "ships2": None,
+        }
+        self.scene = None
+        self.go_to(State.MENU)       # ou poderia ir direto para PLACEMENT, mas o menu é mais comum
 
     def go_to(self, state, data=None):
         data = data or {}
@@ -20,10 +26,18 @@ class SceneManager:
             self.scene = MenuScene(self)
         elif state == State.PLACEMENT:
             from scenes.placement import PlacementScene
-            self.scene = PlacementScene(self)
+            # A cena de posicionamento agora recebe data (com player_id)
+            self.scene = PlacementScene(self, data)
         elif state == State.BATTLE:
             from scenes.battle import BattleScene
-            self.scene = BattleScene(self, data)
+            # A batalha espera os dois tabuleiros e listas de navios
+            battle_data = {
+                "board1": self.game_data["board1"],
+                "ships1": self.game_data["ships1"],
+                "board2": self.game_data["board2"],
+                "ships2": self.game_data["ships2"],
+            }
+            self.scene = BattleScene(self, battle_data)
         elif state == State.PAUSE:
             from scenes.pause import PauseScene
             self.scene = PauseScene(self, data)
@@ -38,7 +52,7 @@ def main():
     pygame.display.set_caption(TITLE)
     settings.init_fonts()
 
-    clock   = pygame.time.Clock()
+    clock = pygame.time.Clock()
     manager = SceneManager(screen)
 
     running = True
