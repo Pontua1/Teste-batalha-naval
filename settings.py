@@ -16,13 +16,8 @@ GRID_OFFSET_X_AI     = 30 + 500 + 40
 GRID_OFFSET_Y        = 110
 
 # ── Navios (nome: tamanho) ────────────────────────────────────────────────────
-SHIPS = {
-    "Porta-aviões": 5,
-    "Cruzador":     4,
-    "Destroyer":    3,
-    "Submarino":    3,
-    "Lancha":       2,
-}
+NUM_SHIPS = 7
+SHIP_SIZE = 3
 
 # ── Paleta de cores ───────────────────────────────────────────────────────────
 C_BG          = (12,  22,  40)   # fundo principal (azul escuro)

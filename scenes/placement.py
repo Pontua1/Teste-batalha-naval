@@ -1,5 +1,3 @@
-# scenes/placement.py — Posicionamento de navios para dois jogadores
-
 import pygame
 import random
 from scenes.scene_base import Scene
@@ -9,21 +7,22 @@ from board.board import Board
 from board.renderer import BoardRenderer
 from settings import (
     SCREEN_W, SCREEN_H, C_BG, C_WHITE, C_GRAY, C_HIGHLIGHT,
-    GRID_OFFSET_X_PLAYER, GRID_OFFSET_Y, SHIPS,
-    FONT_MEDIUM, FONT_SMALL, State, CELL_SIZE
+    GRID_OFFSET_X_PLAYER, GRID_OFFSET_Y,
+    FONT_MEDIUM, FONT_SMALL, State, CELL_SIZE,
+    NUM_SHIPS, SHIP_SIZE          # <-- importe as novas constantes
 )
 
 
 class PlacementScene(Scene):
     def __init__(self, manager, data):
         super().__init__(manager)
-        # Qual jogador está posicionando? (1 ou 2)
         self.player_id = data.get("player_id", 1)
 
         self.board = Board()
         self.renderer = BoardRenderer(None, GRID_OFFSET_X_PLAYER, GRID_OFFSET_Y)
-        self.ship_queue = list(SHIPS.items())   # [(nome, tamanho), ...]
-        self.placed = []                        # Ship já posicionados
+        # Cria uma fila de navios com nomes genéricos (todos do mesmo tamanho)
+        self.ship_queue = [(f"Navio {i+1}", SHIP_SIZE) for i in range(NUM_SHIPS)]
+        self.placed = []
         self.current_idx = 0
         self.horizontal = True
         self.hover_cell = None

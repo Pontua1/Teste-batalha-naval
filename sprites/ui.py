@@ -48,16 +48,12 @@ class HUD:
         # Contagem de navios vivos
         alive1 = sum(1 for s in ships1 if not s.is_sunk())
         alive2 = sum(1 for s in ships2 if not s.is_sunk())
-        total1 = len(ships1)
-        total2 = len(ships2)
-
-        # Linhas de informação
+        total = len(ships1)  # ou NUM_SHIPS
         lines = [
-            f"Jogador 1: {alive1}/{total1} navios",
-            f"Jogador 2: {alive2}/{total2} navios",
+            f"Jogador 1: {alive1}/{total} navios",
+            f"Jogador 2: {alive2}/{total} navios",
             f"Vez: {'JOGADOR 1' if turn == 'player1' else 'JOGADOR 2'}",
         ]
-
         for i, line in enumerate(lines):
             surf = FONT_SMALL.render(line, True, C_WHITE)
             self.surface.blit(surf, (x + 14, y + 12 + i * 24))
