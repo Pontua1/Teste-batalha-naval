@@ -1,0 +1,16 @@
+__pycache__/settings.cpython-313.pyc
+board/__pycache__/__init__.cpython-313.pyc
+board/__pycache__/ai.cpython-313.pyc
+board/__pycache__/board.cpython-313.pyc
+board/__pycache__/renderer.cpython-313.pyc
+scenes/__pycache__/__init__.cpython-313.pyc
+scenes/__pycache__/battle.cpython-313.pyc
+scenes/__pycache__/gameover.cpython-313.pyc
+scenes/__pycache__/menu.cpython-313.pyc
+scenes/__pycache__/pause.cpython-313.pyc
+scenes/__pycache__/placement.cpython-313.pyc
+scenes/__pycache__/scene_base.cpython-313.pyc
+sprites/__pycache__/__init__.cpython-313.pyc
+sprites/__pycache__/effects.cpython-313.pyc
+sprites/__pycache__/ship.cpython-313.pyc
+sprites/__pycache__/ui.cpython-313.pyc
