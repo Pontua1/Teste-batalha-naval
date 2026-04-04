@@ -17,11 +17,11 @@ GRID_OFFSET_Y        = 120
 
 # ── Navios (nome: tamanho) ────────────────────────────────────────────────────
 SHIPS = {
-    "Porta-aviões": 5,
-    "Cruzador":     4,
-    "Destroyer":    3,
-    "Submarino":    3,
-    "Lancha":       2,
+    "Destroyer 1": 3,
+    "Destroyer 2": 3,
+    "Destroyer 3": 3,
+    "Destroyer 4": 3,
+    "Destroyer 5": 3,
 }
 
 # ── Paleta de cores ───────────────────────────────────────────────────────────
