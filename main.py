@@ -14,7 +14,7 @@ def criar_cena_posicionamento(manager, jogador_id):
         "navios_restantes": 7,
         "mensagem": "",
         "btn_continuar": criar_botao(SCREEN_W-180, SCREEN_H-80, 150, 50, "Continuar"),
-        "renderer": criar_renderer(OFFSET_X1, OFFSET_Y)
+        "renderer": criar_renderer(POS_X1_TABULEIRO, POS_Y_TABULEIRO)
     }
 
 def tentar_colocar_navio(cena, row, col):
@@ -62,7 +62,7 @@ def desenhar_posicionamento(surf, cena):
         if c + 3 <= 10:
             for i in range(3):
                 rect = cell_rect(cena["renderer"], r, c+i)
-                s = pygame.Surface((CELL_SIZE, CELL_SIZE), pygame.SRCALPHA)
+                s = pygame.Surface((QUADRADO_SIZE, QUADRADO_SIZE), pygame.SRCALPHA)
                 s.fill((80,200,120,120))
                 surf.blit(s, rect.topleft)
     
@@ -85,8 +85,8 @@ def criar_cena_batalha(manager, dados):
         "ships1": dados["ships1"],
         "board2": dados["board2"],
         "ships2": dados["ships2"],
-        "renderer1": criar_renderer(OFFSET_X1, OFFSET_Y),
-        "renderer2": criar_renderer(OFFSET_X2, OFFSET_Y),
+        "renderer1": criar_renderer(POS_X1_TABULEIRO, POS_Y_TABULEIRO),
+        "renderer2": criar_renderer(POS_X2_TABULEIRO, POS_Y_TABULEIRO),
         "turn": "player1",
         "message": "Vez do Jogador 1! Clique no tabuleiro direito."
     }

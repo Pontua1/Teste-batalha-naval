@@ -72,17 +72,17 @@ def eh_acerto(tab, row, col):
         return False
 
 # ---------- Renderizador do tabuleiro (dicionário + funções) ----------
-def criar_renderer(offset_x, offset_y):
+def criar_renderer(pos_x_tabuleiro, pos_y_tabuleiro):
     return {
-        "offset_x": offset_x,
-        "offset_y": offset_y,
+        "offset_x": pos_x_tabuleiro,
+        "offset_y": pos_y_tabuleiro,
         "hover_cell": None
     }
 
 def cell_rect(renderer, row, col):
-    x = renderer["offset_x"] + col * CELL_SIZE
-    y = renderer["offset_y"] + row * CELL_SIZE
-    return pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
+    x = renderer["offset_x"] + col * QUADRADO_SIZE
+    y = renderer["offset_y"] + row * QUADRADO_SIZE
+    return pygame.Rect(x, y, QUADRADO_SIZE, QUADRADO_SIZE)
 
 def pixel_para_celula(renderer, mx, my):
     for r in range(10):
@@ -114,12 +114,12 @@ def desenhar_tabuleiro(surf, renderer, tab, mostrar_navios=False):
 
             # --- HOVER (semi-transparente) ---
             if renderer["hover_cell"] == (r, c):
-                s = pygame.Surface((CELL_SIZE, CELL_SIZE), pygame.SRCALPHA)
+                s = pygame.Surface((QUADRADO_SIZE, QUADRADO_SIZE), pygame.SRCALPHA)
                 s.fill((255,255,255,60))
                 surf.blit(s, rect.topleft)
 
 def desenhar_label(surf, renderer, texto):
     txt = FONT_SM.render(texto, True, C_WHITE)
-    x = renderer["offset_x"] + (10*CELL_SIZE - txt.get_width())//2
+    x = renderer["offset_x"] + (10*QUADRADO_SIZE - txt.get_width())//2
     y = renderer["offset_y"] - 30
     surf.blit(txt, (x, y))
