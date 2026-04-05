@@ -91,21 +91,28 @@ def pixel_para_celula(renderer, mx, my):
                 return (r, c)
     return None
 
-def desenhar_tabuleiro(surf, renderer, tab):
+def desenhar_tabuleiro(surf, renderer, tab, mostrar_navios=False):
     for r in range(10):
         for c in range(10):
             rect = cell_rect(renderer, r, c)
             pygame.draw.rect(surf, (30,40,60), rect)
             pygame.draw.rect(surf, C_GRAY, rect, 1)
+
+            # --- MOSTRAR NAVIOS (se solicitado e se a célula tiver navio e não foi atingida) ---
+            if mostrar_navios and tab["grid"][r][c] is not None and not tab["hits"][r][c]:
+                pygame.draw.rect(surf, (80, 120, 160), rect)          # azul suave
+                pygame.draw.rect(surf, C_WHITE, rect, 1)              # borda branca
+
+            # --- MARCAS DE TIRO (sempre mostradas, se houver) ---
             if tab["hits"][r][c]:
                 if tab["grid"][r][c] is not None:
-                    # X vermelho
                     cx, cy = rect.center
                     pygame.draw.line(surf, (255,50,50), (cx-12, cy-12), (cx+12, cy+12), 3)
                     pygame.draw.line(surf, (255,50,50), (cx+12, cy-12), (cx-12, cy+12), 3)
                 else:
-                    # círculo azul (água)
                     pygame.draw.circle(surf, (100,150,255), rect.center, 10, 2)
+
+            # --- HOVER (semi-transparente) ---
             if renderer["hover_cell"] == (r, c):
                 s = pygame.Surface((CELL_SIZE, CELL_SIZE), pygame.SRCALPHA)
                 s.fill((255,255,255,60))

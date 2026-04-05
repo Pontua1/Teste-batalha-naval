@@ -53,7 +53,7 @@ def tratar_evento_posicionamento(cena, evento):
 
 def desenhar_posicionamento(surf, cena):
     surf.fill(C_BG)
-    desenhar_tabuleiro(surf, cena["renderer"], cena["tabuleiro"])
+    desenhar_tabuleiro(surf, cena["renderer"], cena["tabuleiro"], mostrar_navios=True)
     desenhar_label(surf, cena["renderer"], f"JOGADOR {cena['jogador_id']} – POSICIONE NAVIOS")
     
     # Pré‑visualização do navio no hover
