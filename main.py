@@ -108,27 +108,41 @@ def tratar_evento_batalha(cena, evento):
         if cena["turn"] == "player1":
             celula = pixel_para_celula(cena["renderer2"], *evento.pos)
             if celula:
-                acertou = aplicar_tiro(cena, cena["board2"], celula[0], celula[1], "1")
-                if not acertou:
+                row, col = celula
+                tab_alvo = cena["board2"]
+                navio = tab_alvo["grid"][row][col]
+                acertou = eh_acerto(tab_alvo, row, col)
+                
+                if acertou:
+                    if navio is not None and navio_afundado(tab_alvo, navio):
+                        cena["manager"]["sons"]["afundou"].play()
+                    cena["message"] = "Jogador 1: ACERTOU! Jogue novamente!"
+                else:
+                    cena["manager"]["sons"]["agua"].play()
                     cena["turn"] = "player2"
                     cena["message"] = "Vez do Jogador 2! Clique no tabuleiro esquerdo."
-                else:
-                    cena["message"] += " Jogue novamente!"
         elif cena["turn"] == "player2":
             celula = pixel_para_celula(cena["renderer1"], *evento.pos)
             if celula:
-                acertou = aplicar_tiro(cena, cena["board1"], celula[0], celula[1], "2")
-                if not acertou:
+                row, col = celula
+                tab_alvo = cena["board1"]
+                navio = tab_alvo["grid"][row][col]
+                acertou = eh_acerto(tab_alvo, row, col)
+                
+                if acertou:
+                    if navio is not None and navio_afundado(tab_alvo, navio):
+                        cena["manager"]["sons"]["afundou"].play()
+                    cena["message"] = "Jogador 2: ACERTOU! Jogue novamente!"
+                else:
+                    cena["manager"]["sons"]["agua"].play()
                     cena["turn"] = "player1"
                     cena["message"] = "Vez do Jogador 1! Clique no tabuleiro direito."
-                else:
-                    cena["message"] += " Jogue novamente!"
         
         # Checar vitória
         if todos_afundados(cena["board2"]):
-            ir_para(cena["manager"], "gameover", "Jogador 1")
+            ir_para(cena["manager"], GAMEOVER, "Jogador 1")
         elif todos_afundados(cena["board1"]):
-            ir_para(cena["manager"], "gameover", "Jogador 2")
+            ir_para(cena["manager"], GAMEOVER, "Jogador 2")
     
     if evento.type == pygame.MOUSEMOTION:
         if cena["turn"] == "player1":
@@ -177,12 +191,23 @@ def desenhar_gameover(surf, cena):
 # ------------------------------------------------------------
 def criar_jogo():
     pygame.init()
+    pygame.mixer.init()  # Inicializa o sistema de áudio
+
+    # Carrega os efeitos sonoros (trate erro se arquivos não existirem)
+    sons = {}
+    try:
+        sons["agua"] = pygame.mixer.Sound("agua.mp3")
+        sons["afundou"] = pygame.mixer.Sound("explosion.ogg")
+    except Exception as e:
+        print(f"Erro ao carregar sons: {e}. O jogo continuará sem áudio.")
+
     return {
         "screen": pygame.display.set_mode((SCREEN_W, SCREEN_H)),
         "clock": pygame.time.Clock(),
         "running": True,
         "cena_atual": None,
-        "dados": {}
+        "dados": {},
+        "sons": sons   # guarda os sons no dicionário principal
     }
 
 def ir_para(jogo, estado, parametro=None):
