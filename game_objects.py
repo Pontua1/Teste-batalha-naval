@@ -110,7 +110,13 @@ def desenhar_tabuleiro(surf, renderer, tab, mostrar_navios=False):
                     pygame.draw.line(surf, (255,50,50), (cx-12, cy-12), (cx+12, cy+12), 3)
                     pygame.draw.line(surf, (255,50,50), (cx+12, cy-12), (cx-12, cy+12), 3)
                 else:
-                    pygame.draw.circle(surf, (100,150,255), rect.center, 10, 2)
+                    cx, cy = rect.center
+# Desenha dois círculos concêntricos (ondas)
+                    pygame.draw.circle(surf, (100,150,255), (cx, cy), 18, 1)
+                    pygame.draw.circle(surf, (100,150,255), (cx, cy), 12, 1)
+                    pygame.draw.circle(surf, (100,150,255), (cx, cy), 6, 1)
+# Pequeno respingo central
+                    pygame.draw.circle(surf, (150,200,255), (cx, cy), 2)
 
             # --- HOVER (semi-transparente) ---
             if renderer["hover_cell"] == (r, c):
