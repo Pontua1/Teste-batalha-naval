@@ -2,9 +2,7 @@ import pygame, sys
 from config import *
 from game_objects import *
 
-# ------------------------------------------------------------
-# CENA DE POSICIONAMENTO
-# ------------------------------------------------------------
+
 def criar_cena_posicionamento(manager, jogador_id):
     return {
         "tipo": "posicionamento",
@@ -56,7 +54,6 @@ def desenhar_posicionamento(surf, cena):
     desenhar_tabuleiro(surf, cena["renderer"], cena["tabuleiro"], mostrar_navios=True)
     desenhar_label(surf, cena["renderer"], f"JOGADOR {cena['jogador_id']} – POSICIONE NAVIOS")
     
-    # Pré‑visualização do navio no hover
     if cena["navios_restantes"] > 0 and cena["renderer"]["hover_cell"]:
         r, c = cena["renderer"]["hover_cell"]
         if c + 3 <= 10:
@@ -74,9 +71,7 @@ def desenhar_posicionamento(surf, cena):
     if cena["navios_restantes"] == 0:
         desenhar_botao(surf, cena["btn_continuar"])
 
-# ------------------------------------------------------------
-# CENA DE BATALHA
-# ------------------------------------------------------------
+
 def criar_cena_batalha(manager, dados):
     return {
         "tipo": "batalha",
@@ -138,7 +133,6 @@ def tratar_evento_batalha(cena, evento):
                     cena["turn"] = "player1"
                     cena["message"] = "Vez do Jogador 1! Clique no tabuleiro direito."
         
-        # Checar vitória
         if todos_afundados(cena["board2"]):
             ir_para(cena["manager"], GAMEOVER, "Jogador 1")
         elif todos_afundados(cena["board1"]):
@@ -162,9 +156,6 @@ def desenhar_batalha(surf, cena):
     msg_rect = msg.get_rect(center=(SCREEN_W//2, SCREEN_H-30))
     surf.blit(msg, msg_rect)
 
-# ------------------------------------------------------------
-# CENA DE GAME OVER
-# ------------------------------------------------------------
 def criar_cena_gameover(manager, vencedor):
     return {
         "tipo": "gameover",
@@ -186,14 +177,10 @@ def desenhar_gameover(surf, cena):
     instr_rect = instr.get_rect(center=(SCREEN_W//2, SCREEN_H//2 + 40))
     surf.blit(instr, instr_rect)
 
-# ------------------------------------------------------------
-# GERENCIADOR DE JOGO (DICIONÁRIO PRINCIPAL)
-# ------------------------------------------------------------
 def criar_jogo():
     pygame.init()
-    pygame.mixer.init()  # Inicializa o sistema de áudio
+    pygame.mixer.init()
 
-    # Carrega os efeitos sonoros (trate erro se arquivos não existirem)
     sons = {}
     try:
         sons["agua"] = pygame.mixer.Sound("agua.mp3")
@@ -207,7 +194,7 @@ def criar_jogo():
         "running": True,
         "cena_atual": None,
         "dados": {},
-        "sons": sons   # guarda os sons no dicionário principal
+        "sons": sons   
     }
 
 def ir_para(jogo, estado, parametro=None):
@@ -219,7 +206,7 @@ def ir_para(jogo, estado, parametro=None):
         jogo["cena_atual"] = criar_cena_gameover(jogo, parametro)
 
 def rodar_jogo(jogo):
-    pygame.display.set_caption("Batalha Naval - Dicionários")
+    pygame.display.set_caption("Batalha Naval")
     ir_para(jogo, "posicionamento", 1)
     while jogo["running"]:
         for evento in pygame.event.get():
@@ -246,9 +233,6 @@ def rodar_jogo(jogo):
     pygame.quit()
     sys.exit()
 
-# ------------------------------------------------------------
-# PONTO DE ENTRADA
-# ------------------------------------------------------------
 if __name__ == "__main__":
     jogo = criar_jogo()
     rodar_jogo(jogo)

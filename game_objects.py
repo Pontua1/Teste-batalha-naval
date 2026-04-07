@@ -1,7 +1,6 @@
 import pygame
 from config import *
 
-# ---------- Funções auxiliares de botão (sem classe) ----------
 def criar_botao(x, y, w, h, texto, cor=(50,50,150)):
     return {
         "rect": pygame.Rect(x, y, w, h),
@@ -26,17 +25,14 @@ def desenhar_botao(surf, botao):
     y = botao["rect"].y + (botao["rect"].h - txt.get_height())//2
     surf.blit(txt, (x, y))
 
-# ---------- Navio (apenas uma função criadora) ----------
 def criar_navio(row, col):
-    """Retorna um navio: lista de posições (row, col) horizontal, tamanho 3"""
     return [(row, col + i) for i in range(3)]
 
-# ---------- Tabuleiro como dicionário ----------
 def criar_tabuleiro():
     return {
-        "grid": [[None for _ in range(10)] for _ in range(10)],  # None ou referência ao navio (lista)
+        "grid": [[None for _ in range(10)] for _ in range(10)],  
         "hits": [[False for _ in range(10)] for _ in range(10)],
-        "navios": []   # lista de navios (cada navio é uma lista de posições)
+        "navios": []
     }
 
 def colocar_navio(tab, navio):
@@ -58,12 +54,10 @@ def todos_afundados(tab):
     return all(navio_afundado(tab, nav) for nav in tab["navios"])
 
 def eh_acerto(tab, row, col):
-    """Verifica se há navio na célula. Se houver, marca todo o navio como atingido. Retorna True se acertou."""
     if tab["hits"][row][col]:
-        return False  # já foi bombardeada
+        return False  
     navio = tab["grid"][row][col]
     if navio is not None:
-        # Marcar todas as células do navio como hit
         for r, c in navio:
             tab["hits"][r][c] = True
         return True
@@ -71,7 +65,6 @@ def eh_acerto(tab, row, col):
         tab["hits"][row][col] = True
         return False
 
-# ---------- Renderizador do tabuleiro (dicionário + funções) ----------
 def criar_renderer(pos_x_tabuleiro, pos_y_tabuleiro):
     return {
         "offset_x": pos_x_tabuleiro,
@@ -98,12 +91,10 @@ def desenhar_tabuleiro(surf, renderer, tab, mostrar_navios=False):
             pygame.draw.rect(surf, (30,40,60), rect)
             pygame.draw.rect(surf, C_GRAY, rect, 1)
 
-            # --- MOSTRAR NAVIOS (se solicitado e se a célula tiver navio e não foi atingida) ---
             if mostrar_navios and tab["grid"][r][c] is not None and not tab["hits"][r][c]:
-                pygame.draw.rect(surf, (80, 120, 160), rect)          # azul suave
-                pygame.draw.rect(surf, C_WHITE, rect, 1)              # borda branca
+                pygame.draw.rect(surf, (80, 120, 160), rect)          
+                pygame.draw.rect(surf, C_WHITE, rect, 1)              
 
-            # --- MARCAS DE TIRO (sempre mostradas, se houver) ---
             if tab["hits"][r][c]:
                 if tab["grid"][r][c] is not None:
                     cx, cy = rect.center
@@ -111,14 +102,11 @@ def desenhar_tabuleiro(surf, renderer, tab, mostrar_navios=False):
                     pygame.draw.line(surf, (255,50,50), (cx+12, cy-12), (cx-12, cy+12), 3)
                 else:
                     cx, cy = rect.center
-# Desenha dois círculos concêntricos (ondas)
                     pygame.draw.circle(surf, (100,150,255), (cx, cy), 18, 1)
                     pygame.draw.circle(surf, (100,150,255), (cx, cy), 12, 1)
                     pygame.draw.circle(surf, (100,150,255), (cx, cy), 6, 1)
-# Pequeno respingo central
                     pygame.draw.circle(surf, (150,200,255), (cx, cy), 2)
 
-            # --- HOVER (semi-transparente) ---
             if renderer["hover_cell"] == (r, c):
                 s = pygame.Surface((QUADRADO_SIZE, QUADRADO_SIZE), pygame.SRCALPHA)
                 s.fill((255,255,255,60))
