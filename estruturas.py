@@ -25,15 +25,15 @@ def desenhar_botao(surf, botao):
     y = botao["rect"].y + (botao["rect"].h - txt.get_height())//2
     surf.blit(txt, (x, y))
 
-def criar_navio(row, col):
-    return [(row, col + i) for i in range(3)]
-
 def criar_tabuleiro():
     return {
         "grid": [[None for _ in range(10)] for _ in range(10)],  
         "hits": [[False for _ in range(10)] for _ in range(10)],
         "navios": []
     }
+
+def criar_navio(row, col):
+    return [(row, col + i) for i in range(3)]
 
 def colocar_navio(tab, navio):
     for r, c in navio:
