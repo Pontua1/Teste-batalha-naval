@@ -77,7 +77,7 @@ def cell_rect(renderer, row, col):
     y = renderer["offset_y"] + row * QUADRADO_SIZE
     return pygame.Rect(x, y, QUADRADO_SIZE, QUADRADO_SIZE)
 
-def desenhar_label(surf, renderer, texto):
+def desenhar_titulo(surf, renderer, texto):
     txt = FONT_SM.render(texto, True, C_WHITE)
     x = renderer["offset_x"] + (10*QUADRADO_SIZE - txt.get_width())//2
     y = renderer["offset_y"] - 30
