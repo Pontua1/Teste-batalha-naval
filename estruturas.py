@@ -77,6 +77,12 @@ def cell_rect(renderer, row, col):
     y = renderer["offset_y"] + row * QUADRADO_SIZE
     return pygame.Rect(x, y, QUADRADO_SIZE, QUADRADO_SIZE)
 
+def desenhar_label(surf, renderer, texto):
+    txt = FONT_SM.render(texto, True, C_WHITE)
+    x = renderer["offset_x"] + (10*QUADRADO_SIZE - txt.get_width())//2
+    y = renderer["offset_y"] - 30
+    surf.blit(txt, (x, y))
+
 def pixel_para_celula(renderer, mx, my):
     for r in range(10):
         for c in range(10):
@@ -111,9 +117,3 @@ def desenhar_tabuleiro(surf, renderer, tab, mostrar_navios=False):
                 s = pygame.Surface((QUADRADO_SIZE, QUADRADO_SIZE), pygame.SRCALPHA)
                 s.fill((255,255,255,60))
                 surf.blit(s, rect.topleft)
-
-def desenhar_label(surf, renderer, texto):
-    txt = FONT_SM.render(texto, True, C_WHITE)
-    x = renderer["offset_x"] + (10*QUADRADO_SIZE - txt.get_width())//2
-    y = renderer["offset_y"] - 30
-    surf.blit(txt, (x, y))
